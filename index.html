@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mercari Pulse — 今のメルカリの鼓動</title>
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #FF0211;
+      --red-dark: #CC0000;
+      --red-light: #FFF0F0;
+      --black: #1A1A1A;
+      --gray-900: #2D2D2D;
+      --gray-700: #4A4A4A;
+      --gray-500: #767676;
+      --gray-300: #C4C4C4;
+      --gray-100: #F5F5F5;
+      --white: #FFFFFF;
+      --font: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      --radius: 12px;
+      --shadow: 0 2px 12px rgba(0,0,0,.08);
+      --shadow-hover: 0 6px 24px rgba(0,0,0,.14);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: #F2F2F2;
+      color: var(--black);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; border: none; background: none; font-family: var(--font); }
+    img { display: block; max-width: 100%; }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: var(--white);
+      border-bottom: 2px solid var(--red);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      height: 60px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--red);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon svg { width: 18px; height: 18px; fill: white; }
+    .logo-text { font-size: 18px; font-weight: 800; letter-spacing: -.5px; }
+    .logo-text span { color: var(--red); }
+    .logo-sub { font-size: 10px; color: var(--gray-500); letter-spacing: .5px; margin-top: -2px; }
+
+    /* Universal Search */
+    .search-wrap {
+      flex: 1;
+      max-width: 560px;
+    }
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--gray-100);
+      border: 1.5px solid var(--gray-300);
+      border-radius: 24px;
+      padding: 0 16px;
+      height: 40px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .search-box:focus-within {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(255,2,17,.1);
+      background: var(--white);
+    }
+    .search-box svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gray-500); }
+    .search-input {
+      flex: 1;
+      border: none;
+      background: none;
+      font-size: 14px;
+      color: var(--black);
+      outline: none;
+      padding: 0 10px;
+      font-family: var(--font);
+    }
+    .search-input::placeholder { color: var(--gray-300); }
+    .search-sources {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .source-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-300);
+      color: var(--gray-500);
+    }
+
+    /* Trending keywords strip */
+    .trending-bar {
+      background: var(--red-light);
+      border-bottom: 1px solid rgba(255,2,17,.12);
+      overflow: hidden;
+    }
+    .trending-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 6px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .trending-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--red);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .trending-label::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: pulse 1.4s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .4; transform: scale(.7); }
+    }
+    .trending-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .trending-tag {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: white;
+      color: var(--red);
+      border: 1px solid rgba(255,2,17,.25);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      font-weight: 600;
+    }
+    .trending-tag:hover { background: var(--red); color: white; }
+
+    /* Header right */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .header-date {
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--red), #FF6B35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* ===== LAYOUT ===== */
+    .page {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      grid-template-rows: auto auto 1fr;
+      gap: 24px;
+    }
+    .col-main { grid-column: 1; display: flex; flex-direction: column; gap: 24px; }
+    .col-side { grid-column: 2; display: flex; flex-direction: column; gap: 20px; }
+
+    /* ===== CARD BASE ===== */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .card-link { font-size: 12px; color: var(--red); font-weight: 600; }
+
+    /* ===== RESONANCE FEATURE ===== */
+    .resonance {
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      min-height: 340px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      cursor: pointer;
+    }
+    .resonance-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #1A1A1A 0%, #3D0000 50%, #FF0211 100%);
+      z-index: 0;
+    }
+    .resonance-pattern {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: .06;
+      background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255,255,255,.5) 10px,
+        rgba(255,255,255,.5) 11px
+      );
+    }
+    .resonance-wave {
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 300px; height: 300px;
+      z-index: 1;
+      opacity: .08;
+    }
+    .resonance-content {
+      position: relative;
+      z-index: 2;
+      padding: 32px;
+      background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.3) 60%, transparent 100%);
+    }
+    .resonance-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--red);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      letter-spacing: .5px;
+    }
+    .resonance-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: white;
+      animation: pulse 1.2s ease infinite;
+    }
+    .resonance-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: white;
+      line-height: 1.35;
+      margin-bottom: 12px;
+      letter-spacing: -.3px;
+    }
+    .resonance-lead {
+      font-size: 13px;
+      color: rgba(255,255,255,.75);
+      line-height: 1.7;
+      margin-bottom: 20px;
+      max-width: 540px;
+    }
+    .resonance-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .resonance-author {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .resonance-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF6B35, #FFB347);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: white;
+    }
+    .resonance-author-name { font-size: 12px; color: rgba(255,255,255,.85); font-weight: 600; }
+    .resonance-date { font-size: 11px; color: rgba(255,255,255,.5); }
+    .resonance-heat {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: rgba(255,255,255,.7);
+    }
+    .heat-bar {
+      display: flex;
+      gap: 2px;
+    }
+    .heat-bar span {
+      width: 4px; height: 16px; border-radius: 2px; background: rgba(255,255,255,.3);
+    }
+    .heat-bar span.active { background: var(--red); }
+    .heat-bar span.active.h2 { height: 20px; }
+    .heat-bar span.active.h3 { height: 24px; }
+
+    /* ===== TOPICS TIMELINE ===== */
+    .topics-section .card-header { padding-bottom: 0; border-bottom: none; }
+    .topics-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .tab-btn {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 16px;
+      color: var(--gray-500);
+      border-bottom: 2.5px solid transparent;
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
+    .tab-btn:hover:not(.active) { color: var(--black); }
+
+    .topics-list { padding: 0 20px; }
+    .topic-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--gray-100);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .topic-item:last-child { border-bottom: none; }
+    .topic-item:hover { margin: 0 -20px; padding-left: 20px; padding-right: 20px; background: var(--gray-100); border-radius: 8px; }
+    .topic-thumb {
+      width: 80px;
+      height: 60px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .topic-thumb-inner {
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .topic-body { flex: 1; min-width: 0; }
+    .topic-cat {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .topic-headline {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .topic-meta {
+      font-size: 11px;
+      color: var(--gray-500);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .topic-reactions {
+      display: flex;
+      gap: 4px;
+    }
+    .reaction-mini {
+      font-size: 11px;
+      background: var(--gray-100);
+      border-radius: 10px;
+      padding: 1px 6px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .reaction-mini:hover { background: var(--red-light); }
+
+    /* ===== ALL-HANDS ARCHIVE ===== */
+    .allhands-list { padding: 0 20px 16px; }
+    .allhands-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--gray-100);
+      cursor: pointer;
+    }
+    .allhands-item:last-child { border-bottom: none; }
+    .allhands-thumb {
+      width: 72px; height: 48px;
+      border-radius: 6px;
+      background: var(--black);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .play-icon {
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 8px 0 8px 14px;
+      border-color: transparent transparent transparent white;
+      opacity: .85;
+    }
+    .rec-badge {
+      position: absolute;
+      top: 4px; right: 4px;
+      background: var(--red);
+      color: white;
+      font-size: 8px;
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 3px;
+      letter-spacing: .3px;
+    }
+    .allhands-body { flex: 1; }
+    .allhands-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+    .allhands-meta { font-size: 11px; color: var(--gray-500); }
+    .doc-icon {
+      font-size: 11px;
+      background: var(--gray-100);
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: var(--gray-700);
+    }
+
+    /* ===== REACTION / COMMENT ===== */
+    .comment-section {
+      padding: 0 20px 20px;
+    }
+    .comment-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .comment-input {
+      flex: 1;
+      border: 1.5px solid var(--gray-300);
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-family: var(--font);
+      outline: none;
+      transition: border-color .2s;
+    }
+    .comment-input:focus { border-color: var(--red); }
+    .comment-send {
+      background: var(--red);
+      color: white;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background .15s;
+    }
+    .comment-send:hover { background: var(--red-dark); }
+
+    .comment-list { display: flex; flex-direction: column; gap: 12px; }
+    .comment-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .comment-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: white;
+    }
+    .comment-bubble {
+      background: var(--gray-100);
+      border-radius: 0 12px 12px 12px;
+      padding: 10px 14px;
+      flex: 1;
+    }
+    .comment-author { font-size: 11px; font-weight: 700; margin-bottom: 3px; }
+    .comment-text { font-size: 13px; line-height: 1.5; }
+    .comment-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 5px;
+    }
+    .comment-like { font-size: 11px; color: var(--gray-500); cursor: pointer; }
+    .editor-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      background: var(--red);
+      color: white;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .emoji-bar {
+      display: flex;
+      gap: 6px;
+      padding: 12px 20px;
+      border-top: 1px solid var(--gray-100);
+      background: var(--gray-100);
+      flex-wrap: wrap;
+    }
+    .emoji-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      background: white;
+      border: 1.5px solid var(--gray-300);
+      border-radius: 16px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s, transform .1s;
+      user-select: none;
+    }
+    .emoji-btn:hover { border-color: var(--red); background: var(--red-light); transform: scale(1.08); }
+    .emoji-btn.reacted { border-color: var(--red); background: var(--red-light); }
+    .emoji-count { font-size: 11px; color: var(--gray-700); font-weight: 600; }
+    .emoji-add {
+      font-size: 16px;
+      background: var(--gray-100);
+      border: 1.5px dashed var(--gray-300);
+      border-radius: 16px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: border-color .15s;
+    }
+    .emoji-add:hover { border-color: var(--red); }
+
+    /* ===== SIDEBAR ===== */
+    .side-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .side-card-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .side-icon {
+      width: 20px; height: 20px;
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+    }
+
+    /* Quick Access */
+    .quick-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--gray-100);
+    }
+    .quick-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 16px 8px;
+      background: white;
+      cursor: pointer;
+      transition: background .15s;
+      text-align: center;
+    }
+    .quick-btn:hover { background: var(--red-light); }
+    .quick-emoji { font-size: 22px; }
+    .quick-label { font-size: 11px; font-weight: 600; color: var(--gray-700); line-height: 1.3; }
+
+    /* Metrics */
+    .metrics-list { padding: 0 18px 14px; }
+    .metric-item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .metric-item:last-child { border-bottom: none; }
+    .metric-label { font-size: 11px; color: var(--gray-500); margin-bottom: 4px; font-weight: 600; letter-spacing: .3px; }
+    .metric-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .metric-value { font-size: 22px; font-weight: 800; color: var(--black); letter-spacing: -1px; }
+    .metric-unit { font-size: 11px; color: var(--gray-500); }
+    .metric-change {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .metric-change.up { background: #E6F9F0; color: #1A9F60; }
+    .metric-change.down { background: #FFF0F0; color: var(--red); }
+    .metric-bar-wrap {
+      height: 4px;
+      background: var(--gray-100);
+      border-radius: 2px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .metric-bar {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--red), #FF6B35);
+      transition: width 1s ease;
+    }
+
+    /* Referral */
+    .referral-box {
+      margin: 14px 18px;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--red-light), #FFF8F0);
+      border-radius: 10px;
+      border: 1px solid rgba(255,2,17,.12);
+    }
+    .referral-title { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+    .referral-count { font-size: 28px; font-weight: 800; color: var(--red); letter-spacing: -1px; }
+    .referral-sub { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+    .referral-cta {
+      margin-top: 10px;
+      display: block;
+      text-align: center;
+      background: var(--red);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px;
+      border-radius: 8px;
+      transition: background .15s;
+    }
+    .referral-cta:hover { background: var(--red-dark); }
+
+    /* ===== MEDIA TICKER ===== */
+    .media-ticker {
+      background: var(--black);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      overflow: hidden;
+    }
+    .ticker-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--red);
+      white-space: nowrap;
+      letter-spacing: .5px;
+    }
+    .ticker-content {
+      font-size: 12px;
+      color: rgba(255,255,255,.8);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ticker-content strong { color: white; }
+
+    /* ===== TAG COLORS ===== */
+    .cat-internal { color: #1A6FFF; }
+    .cat-owned { color: #1A9F60; }
+    .cat-external { color: #FF8C00; }
+    .dot-internal { background: #1A6FFF; }
+    .dot-owned { background: #1A9F60; }
+    .dot-external { background: #FF8C00; }
+    .thumb-internal { background: linear-gradient(135deg, #E8F0FF, #C2D5FF); }
+    .thumb-owned { background: linear-gradient(135deg, #E8F9F0, #B8EDD6); }
+    .thumb-external { background: linear-gradient(135deg, #FFF3E0, #FFD8A8); }
+
+    /* ===== SECTION LABEL ===== */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray-500);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 0 0 8px;
+      border-bottom: 2px solid var(--gray-300);
+      margin-bottom: 16px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .page {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+      .col-side { grid-column: 1; }
+      .quick-grid { grid-template-columns: repeat(4, 1fr); }
+      .header-inner { gap: 12px; }
+      .search-sources { display: none; }
+    }
+    @media (max-width: 600px) {
+      .resonance-title { font-size: 17px; }
+      .resonance-lead { display: none; }
+      .quick-grid { grid-template-columns: repeat(3, 1fr); }
+      .logo-sub { display: none; }
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white;
+      border-radius: 16px;
+      width: 560px;
+      max-width: 96vw;
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+    .modal-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .modal-close {
+      margin-left: auto;
+      font-size: 20px;
+      color: var(--gray-500);
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-body { padding: 20px 24px 24px; }
+    .modal-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .modal-title { font-size: 18px; font-weight: 800; line-height: 1.4; margin-bottom: 6px; }
+    .modal-meta { font-size: 12px; color: var(--gray-500); }
+    .modal-lead { font-size: 14px; line-height: 1.8; color: var(--gray-700); }
+
+    /* ===== MERCAN CARD ===== */
+    .mercan-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--gray-100);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .mercan-item:hover { background: var(--gray-100); }
+    .mercan-thumb {
+      width: 72px;
+      height: 54px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+    .mercan-thumb-label {
+      font-size: 8px;
+      font-weight: 700;
+      color: rgba(255,255,255,.7);
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+    .mercan-body { flex: 1; min-width: 0; }
+    .mercan-headline {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.45;
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .mercan-meta { font-size: 10px; color: var(--gray-500); }
+
+    /* ===== NOTIFICATION TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      background: var(--black);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0,0,0,.25);
+      z-index: 300;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform .3s ease, opacity .3s ease;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5z"/></svg>
+      </div>
+      <div>
+        <div class="logo-text">Mercari <span>Pulse</span></div>
+        <div class="logo-sub">TODAY'S HEARTBEAT</div>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input class="search-input" type="text" placeholder="社内を横断検索… Drive, Notion, Slack, GitHub, mercan" id="searchInput" />
+        <div class="search-sources">
+          <span class="source-badge">Drive</span>
+          <span class="source-badge">Slack</span>
+          <span class="source-badge">Notion</span>
+          <span class="source-badge">mercan</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="header-date" id="headerDate"></div>
+      <div class="avatar" title="あなたのプロフィール">YK</div>
+    </div>
+  </div>
+</header>
+
+<!-- Trending bar -->
+<div class="trending-bar">
+  <div class="trending-inner">
+    <div class="trending-label">急上昇</div>
+    <div class="trending-tags" id="trendingTags">
+      <span class="trending-tag" onclick="searchTag(this)">#生成AI活用</span>
+      <span class="trending-tag" onclick="searchTag(this)">#RoadToProfit</span>
+      <span class="trending-tag" onclick="searchTag(this)">#D&I</span>
+      <span class="trending-tag" onclick="searchTag(this)">#Sustainability</span>
+      <span class="trending-tag" onclick="searchTag(this)">#新卒研修</span>
+      <span class="trending-tag" onclick="searchTag(this)">#エンジニアブログ</span>
+      <span class="trending-tag" onclick="searchTag(this)">#All-hands</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE LAYOUT ===== -->
+<main class="page">
+
+  <!-- ====== MAIN COLUMN ====== -->
+  <div class="col-main">
+
+    <!-- RESONANCE FEATURE -->
+    <section>
+      <div class="section-label">✦ RESONANCE — 今週いちばん熱い話</div>
+      <div class="resonance card" onclick="openModal('resonance')">
+        <div class="resonance-bg"></div>
+        <div class="resonance-pattern"></div>
+        <svg class="resonance-wave" viewBox="0 0 200 200" preserveAspectRatio="none">
+          <path d="M0,100 C30,60 70,140 100,100 C130,60 170,140 200,100 L200,200 L0,200 Z" fill="white"/>
+          <path d="M0,130 C30,90 70,160 100,130 C130,90 170,160 200,130 L200,200 L0,200 Z" fill="white" opacity=".5"/>
+        </svg>
+        <div class="resonance-content">
+          <div class="resonance-badge">LIVE STORY</div>
+          <h2 class="resonance-title">大型プロダクトリリースの裏側<br>担当チームが語る苦悩と突破口</h2>
+          <p class="resonance-lead">
+            3ヶ月間のスプリントを経て、先週ついにリリースを迎えた新決済フロー。
+            「もう無理かもしれない」と思った瞬間、チームを救ったのは一通のSlackメッセージだった——
+          </p>
+          <div class="resonance-meta">
+            <div class="resonance-author">
+              <div class="resonance-avatar">T</div>
+              <div>
+                <div class="resonance-author-name">Tanaka Yusuke (Payment Team)</div>
+                <div class="resonance-date">2026年2月21日 · mercan</div>
+              </div>
+            </div>
+            <div class="resonance-heat">
+              <div class="heat-bar">
+                <span class="active"></span>
+                <span class="active h2"></span>
+                <span class="active h3"></span>
+                <span class="active h2"></span>
+                <span class="active h3"></span>
+                <span></span>
+              </div>
+              熱量 HIGH
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ALL-HANDS ARCHIVE -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="dot dot-internal" style="background:#1A6FFF"></span>
+          All-hands アーカイブ
+        </div>
+        <a href="#" class="card-link">すべて見る →</a>
+      </div>
+      <div class="allhands-list">
+        <div class="allhands-item" onclick="openModal('allhands1')">
+          <div class="allhands-thumb">
+            <div class="play-icon"></div>
+            <div class="rec-badge">REC</div>
+          </div>
+          <div class="allhands-body">
+            <div class="allhands-title">2026 Feb All-hands — Q1 OKR進捗と新戦略</div>
+            <div class="allhands-meta">
+              2026年2月14日 · 42分
+              <span class="doc-icon">📄 議事録</span>
+            </div>
+          </div>
+        </div>
+        <div class="allhands-item" onclick="openModal('allhands2')">
+          <div class="allhands-thumb">
+            <div class="play-icon"></div>
+            <div class="rec-badge">REC</div>
+          </div>
+          <div class="allhands-body">
+            <div class="allhands-title">2026 Jan All-hands — 年間テーマ発表「Pulse Up」</div>
+            <div class="allhands-meta">
+              2026年1月17日 · 38分
+              <span class="doc-icon">📄 議事録</span>
+            </div>
+          </div>
+        </div>
+        <div class="allhands-item" onclick="openModal('allhands3')">
+          <div class="allhands-thumb" style="opacity:.7">
+            <div class="play-icon"></div>
+          </div>
+          <div class="allhands-body">
+            <div class="allhands-title">2025 Dec All-hands — 2025年振り返りと来期展望</div>
+            <div class="allhands-meta">
+              2025年12月19日 · 55分
+              <span class="doc-icon">📄 議事録</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOPICS TIMELINE -->
+    <section class="card topics-section">
+      <div class="card-header">
+        <div class="card-title">
+          <span>トピックス</span>
+        </div>
+      </div>
+      <div class="topics-tabs">
+        <button class="tab-btn active" onclick="switchTab(this, 'all')">すべて</button>
+        <button class="tab-btn" onclick="switchTab(this, 'internal')">社内 🏢</button>
+        <button class="tab-btn" onclick="switchTab(this, 'owned')">オウンドメディア ✍️</button>
+        <button class="tab-btn" onclick="switchTab(this, 'external')">マーケット 📰</button>
+      </div>
+
+      <div class="topics-list" id="topicsList">
+
+        <!-- INTERNAL -->
+        <div class="topic-item" data-cat="internal" onclick="openModal('topic1')">
+          <div class="topic-thumb thumb-internal"><div class="topic-thumb-inner">📣</div></div>
+          <div class="topic-body">
+            <div class="topic-cat cat-internal">社内</div>
+            <div class="topic-headline">CEOメッセージ：2026年、私たちが目指す「Pulse Up」の先にあるもの</div>
+            <div class="topic-meta">
+              経営からのメッセージ · 3時間前
+              <div class="topic-reactions">
+                <span class="reaction-mini">🔥 84</span>
+                <span class="reaction-mini">👏 52</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="topic-item" data-cat="internal" onclick="openModal('topic2')">
+          <div class="topic-thumb thumb-internal"><div class="topic-thumb-inner">🤝</div></div>
+          <div class="topic-body">
+            <div class="topic-cat cat-internal">社内</div>
+            <div class="topic-headline">【D&I】ニューロダイバーシティ推進プロジェクト、2月の取り組み報告</div>
+            <div class="topic-meta">
+              D&I Committee · 昨日
+              <div class="topic-reactions">
+                <span class="reaction-mini">💜 43</span>
+                <span class="reaction-mini">🙌 29</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- OWNED MEDIA -->
+        <div class="topic-item" data-cat="owned" onclick="openModal('topic3')">
+          <div class="topic-thumb thumb-owned"><div class="topic-thumb-inner">📝</div></div>
+          <div class="topic-body">
+            <div class="topic-cat cat-owned">mercan</div>
+            <div class="topic-headline">「失敗を糧に」——SREチームが語る、深夜のインシデント対応と組織文化</div>
+            <div class="topic-meta">
+              mercan編集部 · 2日前
+              <div class="topic-reactions">
+                <span class="reaction-mini">🔥 112</span>
+                <span class="reaction-mini">💡 67</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="topic-item" data-cat="owned" onclick="openModal('topic4')">
+          <div class="topic-thumb thumb-owned"><div class="topic-thumb-inner">🎙️</div></div>
+          <div class="topic-body">
+            <div class="topic-cat cat-owned">社内ラジオ</div>
+            <div class="topic-headline">#48「生成AIで変わるプロダクト開発のリズム」ゲスト：AIプラットフォームチーム</div>
+            <div class="topic-meta">
+              Mercari FM · 3日前 · 24分
+              <div class="topic-reactions">
+                <span class="reaction-mini">🎧 88</span>
+                <span class="reaction-mini">🤩 34</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="topic-item" data-cat="owned" onclick="openModal('topic5')">
+          <div class="topic-thumb thumb-owned"><div class="topic-thumb-inner">👩‍💻</div></div>
+          <div class="topic-body">
+            <div class="topic-cat cat-owned">エンジニアブログ</div>
+            <div class="topic-headline">LLMを使ったリスト商品の自動タグ付け精度を32%改善した話</div>
+            <div class="topic-meta">
+              Mercari Tech · 4日前
+              <div class="topic-reactions">
+                <span class="reaction-mini">🚀 156</span>
+                <span class="reaction-mini">❤️ 73</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXTERNAL -->
+        <div class="topic-item" data-cat="external" onclick="openModal('topic6')">
+          <div class="topic-thumb thumb-external"><div class="topic-thumb-inner">📰</div></div>
+          <div class="topic-body">
+            <div class="topic-cat cat-external">日本経済新聞</div>
+            <div class="topic-headline">メルカリ、AIによる不正出品検知率を業界最高水準に——山田CEOがWSJに語る</div>
+            <div class="topic-meta">
+              日経電子版 · 1日前
+              <div class="topic-reactions">
+                <span class="reaction-mini">🏆 201</span>
+                <span class="reaction-mini">🎉 88</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="topic-item" data-cat="external" onclick="openModal('topic7')">
+          <div class="topic-thumb thumb-external"><div class="topic-thumb-inner">💼</div></div>
+          <div class="topic-body">
+            <div class="topic-cat cat-external">LinkedIn バズ投稿</div>
+            <div class="topic-headline">「メルカリで初めてバッグを売った日、私は変わった」──ユーザーの体験談が4万いいね</div>
+            <div class="topic-meta">
+              LinkedIn · 3日前 · 40,000+ reactions
+              <div class="topic-reactions">
+                <span class="reaction-mini">😭 339</span>
+                <span class="reaction-mini">🙏 142</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- REACTION & COMMENT SECTION -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span class="dot" style="background:var(--red)"></span>
+          みんなの反応
+        </div>
+        <span style="font-size:11px;color:var(--gray-500)">Resonance Feature へのコメント</span>
+      </div>
+
+      <!-- Emoji reactions -->
+      <div class="emoji-bar" id="emojiBar">
+        <button class="emoji-btn reacted" onclick="toggleReaction(this)" title="燃えてる">🔥<span class="emoji-count">84</span></button>
+        <button class="emoji-btn" onclick="toggleReaction(this)" title="勉強になった">💡<span class="emoji-count">52</span></button>
+        <button class="emoji-btn" onclick="toggleReaction(this)" title="やばい">🤯<span class="emoji-count">31</span></button>
+        <button class="emoji-btn" onclick="toggleReaction(this)" title="リスペクト">🙏<span class="emoji-count">27</span></button>
+        <button class="emoji-btn" onclick="toggleReaction(this)" title="泣いた">😭<span class="emoji-count">19</span></button>
+        <button class="emoji-btn" onclick="toggleReaction(this)" title="最高">🎉<span class="emoji-count">15</span></button>
+        <button class="emoji-add" onclick="addEmoji()" title="リアクションを追加">＋</button>
+      </div>
+
+      <!-- Comments -->
+      <div class="comment-section">
+        <div class="comment-input-row">
+          <div class="avatar" style="width:28px;height:28px;font-size:11px;flex-shrink:0;">YK</div>
+          <input class="comment-input" id="commentInput" type="text" placeholder="コメントを入力… (Enterで投稿)" onkeydown="postComment(event)" />
+          <button class="comment-send" onclick="postCommentBtn()">投稿</button>
+        </div>
+        <div class="comment-list" id="commentList">
+          <div class="comment-item">
+            <div class="comment-avatar" style="background:linear-gradient(135deg,#1A6FFF,#6B47FF);">SN</div>
+            <div class="comment-bubble">
+              <div class="comment-author">Sato Naoki · Product</div>
+              <div class="comment-text">このインシデント対応の話、自分たちのチームにも通じる部分があって刺さった。「諦めない文化」って結局こういう具体的なエピソードで伝わるんだな。</div>
+              <div class="comment-actions">
+                <span class="comment-like" onclick="likeComment(this)">👍 8</span>
+                <span class="comment-like" onclick="replyComment()">返信</span>
+                <span class="editor-note">📌 編集者ピックアップ</span>
+              </div>
+            </div>
+          </div>
+          <div class="comment-item">
+            <div class="comment-avatar" style="background:linear-gradient(135deg,#1A9F60,#00C9A7);">AK</div>
+            <div class="comment-bubble">
+              <div class="comment-author">Abe Keiko · CS</div>
+              <div class="comment-text">あのリリース、CSにもたくさん問い合わせが来てたけど、裏でこんな戦いがあったとは知らなかった。Tanakaさんありがとう！</div>
+              <div class="comment-actions">
+                <span class="comment-like" onclick="likeComment(this)">👍 14</span>
+                <span class="comment-like" onclick="replyComment()">返信</span>
+              </div>
+            </div>
+          </div>
+          <div class="comment-item">
+            <div class="comment-avatar" style="background:linear-gradient(135deg,#FF8C00,#FFB347);">MH</div>
+            <div class="comment-bubble">
+              <div class="comment-author">Mori Hiroshi · Engineering</div>
+              <div class="comment-text">「一通のSlackメッセージ」が何だったのかめちゃくちゃ気になる。次の1on1で聞いてみよう 😂</div>
+              <div class="comment-actions">
+                <span class="comment-like" onclick="likeComment(this)">👍 22</span>
+                <span class="comment-like" onclick="replyComment()">返信</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /col-main -->
+
+  <!-- ====== SIDEBAR ====== -->
+  <aside class="col-side">
+
+    <!-- Quick Access -->
+    <div class="side-card">
+      <div class="side-card-header">
+        <div class="side-icon" style="background:#FFF0F0;">⚡</div>
+        クイックアクセス
+      </div>
+      <div class="quick-grid">
+        <button class="quick-btn" onclick="quickAccess('経費精算')">
+          <span class="quick-emoji">💴</span>
+          <span class="quick-label">経費精算</span>
+        </button>
+        <button class="quick-btn" onclick="quickAccess('カレンダー')">
+          <span class="quick-emoji">📅</span>
+          <span class="quick-label">カレンダー</span>
+        </button>
+        <button class="quick-btn" onclick="quickAccess('休暇申請')">
+          <span class="quick-emoji">🏖️</span>
+          <span class="quick-label">休暇申請</span>
+        </button>
+        <button class="quick-btn" onclick="quickAccess('福利厚生')">
+          <span class="quick-emoji">🎁</span>
+          <span class="quick-label">福利厚生</span>
+        </button>
+        <button class="quick-btn" onclick="quickAccess('採用情報')">
+          <span class="quick-emoji">🤝</span>
+          <span class="quick-label">リファラル採用</span>
+        </button>
+        <button class="quick-btn" onclick="quickAccess('社内Wiki')">
+          <span class="quick-emoji">📚</span>
+          <span class="quick-label">社内Wiki</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- KPIメトリクス -->
+    <div class="side-card">
+      <div class="side-card-header">
+        <div class="side-icon" style="background:#FFF0F0;">📊</div>
+        今週のメルカリ数字
+        <span style="font-size:10px;color:var(--gray-500);margin-left:4px;font-weight:400;">≈リアルタイム</span>
+      </div>
+      <div class="metrics-list">
+        <div class="metric-item">
+          <div class="metric-label">MONTHLY ACTIVE USERS</div>
+          <div class="metric-row">
+            <div class="metric-value" id="mauValue">2,234</div>
+            <div class="metric-unit">万人</div>
+            <div class="metric-change up">↑ 3.2%</div>
+          </div>
+          <div class="metric-bar-wrap"><div class="metric-bar" style="width:78%"></div></div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">GMV 今月累計</div>
+          <div class="metric-row">
+            <div class="metric-value">847</div>
+            <div class="metric-unit">億円</div>
+            <div class="metric-change up">↑ 8.1%</div>
+          </div>
+          <div class="metric-bar-wrap"><div class="metric-bar" style="width:63%"></div></div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">NPS スコア</div>
+          <div class="metric-row">
+            <div class="metric-value">+62</div>
+            <div class="metric-unit">pt</div>
+            <div class="metric-change up">↑ 4pt</div>
+          </div>
+          <div class="metric-bar-wrap"><div class="metric-bar" style="width:68%"></div></div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-label">インシデント解決率</div>
+          <div class="metric-row">
+            <div class="metric-value">99.8</div>
+            <div class="metric-unit">%</div>
+            <div class="metric-change up">安定</div>
+          </div>
+          <div class="metric-bar-wrap"><div class="metric-bar" style="width:99.8%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Media Ticker -->
+    <div class="media-ticker">
+      <div class="ticker-label">📡 LIVE</div>
+      <div class="ticker-content" id="tickerContent">
+        <strong>日経MJ</strong> 「メルカリ、二次流通で脱炭素貢献 CO₂換算で年間80万トン相当」
+      </div>
+    </div>
+
+    <!-- mercan 最新 -->
+    <div class="side-card">
+      <div class="side-card-header">
+        <div class="side-icon" style="background:#E8F9F0;">✍️</div>
+        mercan 最新記事
+      </div>
+      <div style="padding: 8px 0 12px;">
+
+        <div class="mercan-item" onclick="openModal('mercan1')">
+          <div class="mercan-thumb" style="background: linear-gradient(135deg,#1A1A2E,#16213E);">
+            <span style="font-size:28px;">💬</span>
+            <div class="mercan-thumb-label">Culture</div>
+          </div>
+          <div class="mercan-body">
+            <div class="mercan-headline">「怖かったけど言えてよかった」心理的安全性をつくった一言</div>
+            <div class="mercan-meta">mercan · 1日前</div>
+          </div>
+        </div>
+
+        <div class="mercan-item" onclick="openModal('mercan2')">
+          <div class="mercan-thumb" style="background: linear-gradient(135deg,#0F3460,#533483);">
+            <span style="font-size:28px;">🚀</span>
+            <div class="mercan-thumb-label">Career</div>
+          </div>
+          <div class="mercan-body">
+            <div class="mercan-headline">新卒2年目がPMになるまで——メルカリ流キャリアの作り方</div>
+            <div class="mercan-meta">mercan · 3日前</div>
+          </div>
+        </div>
+
+        <div class="mercan-item" style="border-bottom:none;" onclick="openModal('mercan3')">
+          <div class="mercan-thumb" style="background: linear-gradient(135deg,#1B4332,#40916C);">
+            <span style="font-size:28px;">🌏</span>
+            <div class="mercan-thumb-label">Global</div>
+          </div>
+          <div class="mercan-body">
+            <div class="mercan-headline">メルカリUSチームと協働して分かった「文化の翻訳」の難しさ</div>
+            <div class="mercan-meta">mercan · 5日前</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </aside><!-- /col-side -->
+
+</main>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="flex:1">
+        <div class="modal-tag" id="modalTag" style="background:var(--red-light);color:var(--red)">mercan</div>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-meta" id="modalMeta"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-lead" id="modalLead"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ===== DATE ===== */
+  const d = new Date();
+  const opts = { year:'numeric', month:'long', day:'numeric', weekday:'short' };
+  document.getElementById('headerDate').textContent = d.toLocaleDateString('ja-JP', opts);
+
+  /* ===== SEARCH ===== */
+  function searchTag(el) {
+    const tag = el.textContent;
+    document.getElementById('searchInput').value = tag;
+    document.getElementById('searchInput').focus();
+    showToast(`「${tag}」で社内横断検索中…`);
+  }
+
+  /* ===== TABS ===== */
+  function switchTab(btn, cat) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.topic-item').forEach(item => {
+      item.style.display = (cat === 'all' || item.dataset.cat === cat) ? 'flex' : 'none';
+    });
+  }
+
+  /* ===== EMOJI REACTIONS ===== */
+  function toggleReaction(btn) {
+    const countEl = btn.querySelector('.emoji-count');
+    let count = parseInt(countEl.textContent);
+    if (btn.classList.toggle('reacted')) {
+      countEl.textContent = count + 1;
+      showToast('リアクションしました！');
+    } else {
+      countEl.textContent = count - 1;
+    }
+  }
+
+  const emojiOptions = ['😂','🤔','🙌','💪','👀','🎯','🌟','💬','🤗','💻'];
+  function addEmoji() {
+    const emoji = emojiOptions[Math.floor(Math.random() * emojiOptions.length)];
+    const bar = document.getElementById('emojiBar');
+    const btn = document.createElement('button');
+    btn.className = 'emoji-btn reacted';
+    btn.onclick = () => toggleReaction(btn);
+    btn.innerHTML = `${emoji}<span class="emoji-count">1</span>`;
+    bar.insertBefore(btn, bar.lastElementChild);
+    showToast(`${emoji} リアクションを追加しました`);
+  }
+
+  /* ===== COMMENTS ===== */
+  const avatarColors = [
+    'linear-gradient(135deg,#FF0211,#FF6B35)',
+    'linear-gradient(135deg,#1A6FFF,#6B47FF)',
+    'linear-gradient(135deg,#1A9F60,#00C9A7)',
+    'linear-gradient(135deg,#FF8C00,#FFB347)',
+    'linear-gradient(135deg,#9B59B6,#6C3483)',
+  ];
+  let colorIdx = 0;
+
+  function postComment(e) {
+    if (e.key === 'Enter') postCommentBtn();
+  }
+
+  function postCommentBtn() {
+    const input = document.getElementById('commentInput');
+    const text = input.value.trim();
+    if (!text) return;
+    const list = document.getElementById('commentList');
+    const color = avatarColors[colorIdx++ % avatarColors.length];
+    const div = document.createElement('div');
+    div.className = 'comment-item';
+    div.innerHTML = `
+      <div class="comment-avatar" style="background:${color};">YK</div>
+      <div class="comment-bubble">
+        <div class="comment-author">Kajitani Y. · あなた</div>
+        <div class="comment-text">${escapeHtml(text)}</div>
+        <div class="comment-actions">
+          <span class="comment-like" onclick="likeComment(this)">👍 0</span>
+          <span class="comment-like" onclick="replyComment()">返信</span>
+        </div>
+      </div>`;
+    list.prepend(div);
+    input.value = '';
+    showToast('コメントを投稿しました！');
+  }
+
+  function likeComment(el) {
+    const m = el.textContent.match(/\d+/);
+    el.textContent = `👍 ${parseInt(m[0]) + 1}`;
+    showToast('いいね！');
+  }
+
+  function replyComment() { showToast('返信機能は準備中です'); }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /* ===== MODAL DATA ===== */
+  const modalData = {
+    resonance: {
+      tag: 'LIVE STORY', tagColor: 'var(--red)', tagBg: 'var(--red-light)',
+      title: '大型プロダクトリリースの裏側：担当チームが語る苦悩と突破口',
+      meta: 'Tanaka Yusuke (Payment Team) · 2026年2月21日 · mercan',
+      lead: `3ヶ月間のスプリントを経て、先週ついにリリースを迎えた新決済フロー。QA期間に発見された重大なバグ、深夜のリグレッションテスト、そして「もう無理かもしれない」と思ったあの瞬間——。\n\nチームを救ったのは、PdMのKeiko Abeが送った一通のSlackメッセージだった。「あなたたちがやっていることを信じてる。今夜もう一回だけ一緒に考えさせてほしい」。その言葉が、諦めかけていたエンジニアたちの心に火をつけた。\n\nこれは、ひとつのプロダクトをリリースするまでの、本当の話だ。`
+    },
+    allhands1: {
+      tag: '社内', tagColor: '#1A6FFF', tagBg: '#E8F0FF',
+      title: '2026 Feb All-hands — Q1 OKR進捗と新戦略',
+      meta: '2026年2月14日 · 42分 · 全社向け',
+      lead: `Q1の折り返し地点を迎え、OKRの進捗と課題が共有されました。特にRoadToProfit施策の中間レビューと、新規事業ピボットの意思決定プロセスについて詳細なディスカッションが行われました。アーカイブ動画・議事録・Q&Aまとめの3点セットで閲覧できます。`
+    },
+    allhands2: {
+      tag: '社内', tagColor: '#1A6FFF', tagBg: '#E8F0FF',
+      title: '2026 Jan All-hands — 年間テーマ発表「Pulse Up」',
+      meta: '2026年1月17日 · 38分 · 全社向け',
+      lead: `年間テーマ「Pulse Up」が初めて発表されたAll-hands。パルスとは鼓動であり、組織の熱量そのものだというメッセージが印象的でした。各部門の2026年ビジョンも共有されています。`
+    },
+    topic1: {
+      tag: '経営メッセージ', tagColor: '#1A6FFF', tagBg: '#E8F0FF',
+      title: 'CEOメッセージ：2026年、私たちが目指す「Pulse Up」の先にあるもの',
+      meta: '2026年2月24日 · CEO Office',
+      lead: `今年のテーマ「Pulse Up」。これはKPIの数字だけでなく、私たちひとりひとりの仕事への熱量を上げることを意味しています。世界中のユーザーが「フリマアプリはメルカリ」と迷わず選ぶ世界へ、全員で進んでいきましょう。`
+    },
+    topic3: {
+      tag: 'mercan', tagColor: '#1A9F60', tagBg: '#E8F9F0',
+      title: '「失敗を糧に」——SREチームが語る、深夜のインシデント対応と組織文化',
+      meta: '2026年2月22日 · mercan編集部',
+      lead: `午前3時に鳴ったアラート。当直のSREエンジニアが最初に感じたのは「また始まった」という慣れではなく、「チームを信じよう」という確信だったという。ポストモーテム文化が組織の強さをどう変えたか、率直なインタビューでお届けします。`
+    },
+    topic6: {
+      tag: '外部メディア', tagColor: '#FF8C00', tagBg: '#FFF3E0',
+      title: 'メルカリ、AIによる不正出品検知率を業界最高水準に',
+      meta: '日本経済新聞 · 2026年2月23日',
+      lead: `日経電子版に掲載された記事では、メルカリのトラストセーフティチームが独自開発したLLMベースの審査システムについて詳報。不正出品検知率が前年比40%向上し、業界平均を大きく上回る水準に達したと報じられています。`
+    },
+    topic7: {
+      tag: 'LinkedInバズ', tagColor: '#FF8C00', tagBg: '#FFF3E0',
+      title: '「メルカリで初めてバッグを売った日、私は変わった」',
+      meta: 'LinkedIn · 2026年2月21日 · 40,000+ reactions',
+      lead: `育児と仕事の両立に疲弊していた女性が、試しにクローゼットの不用品をメルカリに出品したところ、予想外の反響が。「自分にも価値を生み出せる」という気づきが人生を変えたというストーリーが世界中で共感を呼んでいます。`
+    }
+  };
+
+  function openModal(key) {
+    const data = modalData[key];
+    if (!data) { showToast('コンテンツを準備中です…'); return; }
+    document.getElementById('modalTag').textContent = data.tag;
+    document.getElementById('modalTag').style.color = data.tagColor;
+    document.getElementById('modalTag').style.background = data.tagBg;
+    document.getElementById('modalTitle').textContent = data.title;
+    document.getElementById('modalMeta').textContent = data.meta;
+    document.getElementById('modalLead').innerHTML = data.lead.replace(/\n\n/g, '<br><br>');
+    document.getElementById('modalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(e) {
+    if (e && e.target !== document.getElementById('modalOverlay')) return;
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ===== QUICK ACCESS ===== */
+  function quickAccess(label) {
+    showToast(`${label} を開いています…`);
+  }
+
+  /* ===== TOAST ===== */
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  /* ===== TICKER ROTATION ===== */
+  const tickers = [
+    '<strong>日経MJ</strong> 「メルカリ、二次流通で脱炭素貢献 CO₂換算で年間80万トン相当」',
+    '<strong>Forbes Japan</strong> 「フリマ市場2026年、メルカリが牽引する1兆円超え市場」',
+    '<strong>TechCrunch</strong> 「Mercari Tech、OSS貢献ランキング国内TOP10入り」',
+    '<strong>LinkedInバズ</strong> 「メルカリでバッグを売った日、私の人生が変わった」— 40,000 reactions',
+  ];
+  let tickerIdx = 0;
+  setInterval(() => {
+    tickerIdx = (tickerIdx + 1) % tickers.length;
+    const el = document.getElementById('tickerContent');
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.innerHTML = tickers[tickerIdx];
+      el.style.opacity = '1';
+      el.style.transition = 'opacity .5s';
+    }, 400);
+  }, 6000);
+
+  /* ===== MAU LIVE-ish COUNTER ===== */
+  setInterval(() => {
+    const el = document.getElementById('mauValue');
+    const cur = parseInt(el.textContent.replace(/,/g, ''));
+    const delta = Math.floor(Math.random() * 3) - 1;
+    const next = cur + delta;
+    el.textContent = next.toLocaleString('ja-JP');
+  }, 5000);
+</script>
+</body>
+</html>
